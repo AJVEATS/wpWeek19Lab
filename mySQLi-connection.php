@@ -28,7 +28,7 @@
                 echo "<p>Failed to connect to MySQL. " .
                 "Error (" . mysqli_connect_errno() . "): " . mysqli_connect_error() . "</p>";
             } else {
-                echo '<script>console.log("Connected to server"); </script>';
+                echo '<script>console.log("Inital connection to the server"); </script>';
                 //echo "<p>Connected to server: " . mysqli_get_host_info($connection) . "</p>";
 
                 // ADD CODE THAT USES THE DATABASE CONNECTION HERE
