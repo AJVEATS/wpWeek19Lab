@@ -1,6 +1,69 @@
 <doctype html>
-    <html>
+<?php
+    include "mySQLi-connection.php";
 
+    if (isset($_POST['addSubmit'])) {
+        $productName = $_POST['name'];
+        $productDescription = $_POST['description'];
+        $productPrice = $_POST['price'];
+        $productCostPrice = $_POST['costPrice'];
+        $productStock = $_POST['stock'];
+        $productEAN = $_POST['EAN'];
+
+        $add_query_string = "INSERT INTO products(name, description, price, cost_price, stock, ean) VALUES ('$productName', '$productDescription', '$productPrice', '$productCostPrice', '$productStock', '$productEAN');";
+
+        if (mysqli_query($connection, $add_query_string)) {
+            echo '<script>console.log("user added");</script>';
+        }
+
+        echo "<h3>The product '$productName' has been added to the product catalogue.</h3>
+        <h3>The product are:</h3>
+        <ul>
+            <li>Name: $productName</li>
+            <li>Description: $productDescription</li>
+            <li>Price: $productPrice</li>
+            <li>Cost price: $productCostPrice</li>
+            <li>Stock: $productStock</li>
+            <li>EAN: $EAN</li>
+        </ul>";
+    }
+
+    if (isset($_POST['updateSubmit'])) {
+        $editproductID = $_POST['id'];
+        //echo $editProductID;
+        $editProductName = $_POST['name'];
+        $editProductDescription = $_POST['description'];
+        $editProductPrice = $_POST['price'];
+        $editProductCostPrice = $_POST['costPrice'];
+        $editproductStock = $_POST['stock'];
+        $editproductEAN = $_POST['EAN'];
+
+        $edit_query_string = "UPDATE products SET name = '$editProductName', description = '$editProductDescription', price = '$editProductPrice', cost_price = '$editProductCostPrice', 
+        stock = '$editproductStock', ean = '$editproductEAN' WHERE id = '$editproductID';";
+
+        //echo $edit_query_string;
+
+        //$result = mysqli_query($connection, $edit_query_string);
+
+        if (mysqli_query($connection, $edit_query_string)) {
+            echo '<script>console.log("product updated");</script>';
+        } else {
+            echo '<script>console.log("product not updated");</script>';
+        }
+    }
+
+    if ($_GET['mode'] == "delete") {
+        $deleteProductId = $_GET['id'];
+        $delete_product_string = "DELETE FROM products WHERE id = '$deleteProductId';";
+        if (mysqli_query($connection, $delete_product_string)) {
+            echo '<script>console.log("product deleted");</script>';
+        } else {
+            echo '<script>console.log("product not deleted");</script>';
+            echo $delete_product_string;
+        }
+    }
+?>
+    <html>
     <head>
         <title>
             Product management console
@@ -71,8 +134,7 @@
             <p>Click here to see all the products in the catalogue<input type="submit" name="viewProducts" value="View all products"></p>
             <!--<input type="submit" name="viewProducts" value="View all products"> -->
         </form>
-        <div>
-            <?php
+        <?php
             if (isset($_GET['id'])) {
                 $urlId = $_GET['id'];
                 $urlName = $_GET['name'];
@@ -81,12 +143,11 @@
                 $urlCostPrice = $_GET['costPrice'];
                 $urlStock = $_GET['stock'];
                 $urlEan = $_GET['ean'];
-
+        
                 $productSelectedForm = "
                 <h2>Edit $urlName from the catalogue</h2>
                 <form action='task2.php' method='POST'>
-                <label>Product id<label>
-                <input type='text' name='id' value='$urlId'><br>
+                <input type='hidden' name='id' value='$urlId'>
                 <label>Enter product name:<label>
                 <input type='text' name='name' value='$urlName' required><br>
                 <label>Enter product description: <label>
@@ -102,77 +163,28 @@
                 <input type='submit' name='updateSubmit' value='Edit product'>
                 <button type='reset' name='resetForm'>Clear form</button>
                 </form>";
-
+            }
+            if (isset($_GET['id'])) {
                 echo $productSelectedForm;
                 //echo $_GET['id'];
             } else {
                 //echo '<script>console.log("Click a product"); </script>';
                 echo $productUnselectedForm;
             }
-            ?>
-        </div>
-
-        <?php
-        if (isset($_POST['addSubmit'])) {
-            $productName = $_POST['name'];
-            $productDescription = $_POST['description'];
-            $productPrice = $_POST['price'];
-            $productCostPrice = $_POST['costPrice'];
-            $productStock = $_POST['stock'];
-            $productEAN = $_POST['EAN'];
-
-            $add_query_string = "INSERT INTO products(name, description, price, cost_price, stock, ean) VALUES ('$productName', '$productDescription', '$productPrice', '$productCostPrice', '$productStock', '$productEAN');";
-
-            if (mysqli_query($connection, $add_query_string)) {
-                echo '<script>console.log("user added");</script>';
+            if (isset($_POST['updateSubmit'])) {
+                echo "<h3>The product '$editProductName' has been updated in the product catalogue.</h3>
+                <h3>The new product detail are:</h3>
+                <ul>
+                    <li>id: $editproductID</li>
+                    <li>Name: $editProductName</li>
+                    <li>Description: $editProductDescription</li>
+                    <li>Price: $editProductPrice</li>
+                    <li>Cost Price: $editproductCostPrice</li>
+                    <li>Stock: $editproductStock</li>
+                    <li>EAN: $editproductEAN</li>
+                </ul>";
             }
-
-            echo "<h3>The product '$productName' has been added to the product catalogue.</h3>
-            <h3>The product are:</h3>
-            <ul>
-                <li>Name: $productName</li>
-                <li>Description: $productDescription</li>
-                <li>Price: $productPrice</li>
-                <li>Cost price: $productCostPrice</li>
-                <li>Stock: $productStock</li>
-                <li>EAN: $EAN</li>
-            </ul>";
-        }
-
-        if (isset($_POST['updateSubmit'])) {
-            $editproductID = $_POST['id'];
-            //echo $editProductID;
-            $editProductName = $_POST['name'];
-            $editProductDescription = $_POST['description'];
-            $editProductPrice = $_POST['price'];
-            $editProductCostPrice = $_POST['costPrice'];
-            $editproductStock = $_POST['stock'];
-            $editproductEAN = $_POST['EAN'];
-
-            $edit_query_string = "UPDATE 'products' SET name = '$editProductName', description = '$productDescription', price = '$editProductPrice', cost_price = '$productCostPrice', 
-            stock = '$editproductStock', ean = '$editproductEAN' WHERE id = '$editproductID'";
-
-            $result = mysqli_query($connection, $edit_query_string);
-
-            if ($result) {
-                echo '<script>console.log("<?php $result ?>");</script>';
-            }
-
-        echo "<h3>The product '$editProductName' has been updated in the product catalogue.</h3>
-        <h3>The new product detail are:</h3>
-        <ul>
-            <li>id: $editproductID</li>
-            <li>Name: $editProductName</li>
-            <li>Description: $editProductDescription</li>
-            <li>Price: $editProductPrice</li>
-            <li>Cost Price: $editproductCostPrice</li>
-            <li>Stock: $editproductStock</li>
-            <li>EAN: $editproductEAN</li>
-        </ul>";
-        }
-        ?>
-        <?php
-        mysqli_close($connection);
+            mysqli_close($connection);
         ?>
     </body>
 
